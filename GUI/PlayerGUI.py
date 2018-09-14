@@ -125,47 +125,59 @@ class PlayerGUI:
         self._bid_button.config(command=command)
 
     def get_spinbox_bid(self):
+        """translates the user input (via spinboxes) to bid"""
+
         number = int(self._spinny_number.get())
         symbol = 0 if self._spinny_symbol.get() == "*" else int(self._spinny_symbol.get())
         return number * 10 + symbol if symbol != -1 else -1
 
-    def set_number_spinbox_state(self, state):
-        """
-
-        :param state: one of {"NORMAL", "DISABLED", "readonly"}
-        :return:
-        """
-        if self._human_player:
-            if isinstance(state, str):
-                if state == "NORMAL":
-                    state = NORMAL
-                elif state == "DISABLED":
-                    state = DISABLED
-            self._spinny_number.config(state=state)
-        else:
-            print "is not human player, there is no spinbox"
+    # def set_number_spinbox_state(self, state):
+    #     """
+    #
+    #     :param state: one of {"NORMAL", "DISABLED", "readonly"}
+    #     :return:
+    #     """
+    #     if self._human_player:  # only _human_player has spinbox
+    #         if isinstance(state, str):
+    #             if state == "NORMAL":
+    #                 state = NORMAL
+    #             elif state == "DISABLED":
+    #                 state = DISABLED
+    #         self._spinny_number.config(state=state)
 
     def set_message(self, mess):
+        """ if mess is str then update the player's message label  (otherwise do nothing)"""
+
         if isinstance(mess, str):
             self.message = mess
-            # self.message_canvas.itemconfig(self.message_text, text=mess)
             self.message_label.config(text=mess)
 
     def set_name(self, name=None):
+        """ if name is str then update the player's name label  (otherwise do nothing)"""
+
         if isinstance(name, str):
             if name is not None:
                 self.name = name
             self.name_canvas.itemconfig(self.name_text, text=name)
 
     def set_active(self, active):
+        """ if player is active (=True) then the bg color is set """
+
         self.active = active
         if active:
-            # self.player_frame.config(relief=SUNKEN)
             self.player_frame.config(bg="#333")
-            # else:
-            #     self.player_frame.config(relief=RAISED)
 
     def set_dice(self, dice=None, visible=False):
+        """
+        Updates the GUI for the dice
+
+        Human player's dice are always visible
+        AI's dice only after the end of the round
+
+        :param dice: list with ints representing the dice (1,2,3,4,5,6 (6=star))
+        :param visible: make the dice visible onto the GUI
+        :return:
+        """
         if dice is not None:
             self.dice = dice
         for i in range(5 - len(self.dice)):
