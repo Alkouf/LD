@@ -1,6 +1,10 @@
 import Evaluate as eval
-from players import PlayerAIsimple
+from players import PlayerAIsimple, PlayerHuman, Player, PlayerAImk2
 
+"""
+
+
+"""
 
 class Game:
     def __init__(self):
@@ -26,7 +30,7 @@ class Game:
         :param playerIDs:
         :return:
         """
-        # TODO: test this. Possibly could write it much better.
+
         remainingPlayer = []
         for i in range(0, len(self.players)):
             if self.players[i].id not in playerIDs:
@@ -34,7 +38,7 @@ class Game:
         self.players = remainingPlayer
         self.totalDice = sum([x.nDice for x in self.players])
 
-    def playGame(self, startingPlayerId=None):
+    def playGame(self, starting_player_id=None):
         """
 
         :return:
@@ -43,22 +47,22 @@ class Game:
         if len(self.players) < 2:
             print "Not enough players! Exit"
             exit()
-        if startingPlayerId is None:
-            startingPlayerId = self.players[0].id
+        if starting_player_id is None:
+            starting_player_id = self.players[0].id
 
         while len([x for x in self.players if x.nDice > 0]) > 1:
-            startingPlayerId = self.playCycle(startingPlayerId)
+            starting_player_id = self.play_cycle(starting_player_id)
 
         print "THE GAME IS OVER!"
         for p in self.players:
             print p
-        print "Player", startingPlayerId, " is the winner!"
-        return startingPlayerId
+        print "Player", starting_player_id, " is the winner!"
+        return starting_player_id
 
-    def playCycle(self, startingPlayerId):
+    def play_cycle(self, starting_player_id):
         """
 
-        :param startingPlayerId:
+        :param starting_player_id:
         :return: The id of next starting player.
                  None if game over.
         """
@@ -74,7 +78,7 @@ class Game:
         playingIndex = 0  # the index of the player that plays next, (in regards to the active players list)
 
         for i in range(nofActive):  # find the starting player
-            if activePLayers[i].id == startingPlayerId:
+            if activePLayers[i].id == starting_player_id:
                 playingIndex = i
                 break
 
@@ -97,7 +101,7 @@ class Game:
                 print "Player", activeID, " bidded: ", newBid
             else:
                 print "Invalid new bid, the player plays again!"
-                if isinstance(activePLayers[playingIndex % nofActive], PlayerAIsimple.PlayerAIsimple):
+                if not isinstance(activePLayers[playingIndex % nofActive], PlayerHuman):
                     print "Player is AI, no point in playing again, will provide the same bid probably"
                     exit()
 
@@ -111,17 +115,17 @@ class Game:
         if ev < 0:
             print "player", activePLayers[(playingIndex - 2) % nofActive].id, "loses", abs(ev), "dice"
             activePLayers[(playingIndex - 2) % nofActive].subtractDice(abs(ev))
-            startingPlayerId = activePLayers[(playingIndex - 1) % nofActive].id
+            starting_player_id = activePLayers[(playingIndex - 1) % nofActive].id
         elif ev == 0:
             print "all players but player", activePLayers[(playingIndex - 2) % nofActive].id, "lose one die"
             for p in activePLayers:
                 if p != activePLayers[(playingIndex - 2) % nofActive]:
                     p.subtractDice(1)
-            startingPlayerId = activePLayers[(playingIndex - 2) % nofActive].id
+            starting_player_id = activePLayers[(playingIndex - 2) % nofActive].id
         else:
             print "player", activePLayers[(playingIndex - 1) % nofActive].id, "loses", ev, "dice"
             activePLayers[(playingIndex - 1) % nofActive].subtractDice(abs(ev))
-            startingPlayerId = activePLayers[(playingIndex - 2) % nofActive].id
+            starting_player_id = activePLayers[(playingIndex - 2) % nofActive].id
 
         print "Situation after removing dice:"
 
@@ -133,7 +137,7 @@ class Game:
         print "END of the round"
         self.moves += cycleMoves
 
-        return startingPlayerId
+        return starting_player_id
 
     def reveal(self):
         for p in self.players:
@@ -144,3 +148,18 @@ class Game:
     def update_total_dice(self):
         self.totalDice = sum([x.nDice for x in self.players])
         return self.totalDice
+
+
+if __name__ == '__main__':
+    g = Game()
+    # from players import PlayerAImk2
+
+    g.add_players(playerList=[PlayerHuman(nof_dice=5, player_id=1),
+                              PlayerAImk2(nof_dice=5, player_id=2)
+                              ])
+    g.playGame()
+    # print g.add_players(player_list=[Player(nof_dice=5, player_id=1),
+    #                                  PlayerHuman(nof_dice=5, player_id=2),
+    #                                  PlayerAIsimple(nof_dice=5, player_id=3),
+    #                                  PlayerAImk2(nof_dice=5, player_id=4)
+    #                                  ])

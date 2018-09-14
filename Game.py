@@ -4,6 +4,13 @@ import time
 import threading
 from Tkinter import TclError
 
+
+"""TODO: na ftiaksw to GameCLI na douleuei
+kai na afisw auto na einai apokleistika kai mono gia GUI 
+an den mporei na doulepsei to GUI tote na paei sto CLI automata
+"""
+
+
 class Game:
     def __init__(self, board=None, pui=None, starting_player_id=None, pauses=True):
         """
@@ -76,10 +83,10 @@ class Game:
         """
         Remove players, given a list with player IDs.
 
-        :param player_ids:
+        :param player_ids: list with the ids of the players that continue to play
         :return:
         """
-        # TODO: test this. Possibly could write it much better.
+
         remaining_player = []
         for i in range(0, len(self.players)):
             if self.players[i].id not in player_ids:
@@ -93,24 +100,23 @@ class Game:
     def play_game(self, starting_player_id=None):
         """
         If self.pauses: plays one game round (until somebody challenges), and then waits
-        for the button (inner canvas) to call this method again for a new game round.
+        for the button (inner canvas) to call this method again for a new game round
+        (meaning the human player initiates the new round)
 
         If not self.pauses: plays game rounds, until only one player is left; the winner
             Note: if self.pauses==False: does not work with human player(s)
 
         :param starting_player_id: The id of the player that starts the round.
-                Should be set only on the first game round, it is managed internally for the following rounds.
+                Is set only on the first game round, it is managed internally for the following rounds.
         :return:
         """
         self.board.set_inner_button_state("DISABLED")
 
         self.board.place_bid(0)
 
-        print "XXXXXXXXXXXXX", starting_player_id, self.starting_player_id
+        assert len(self.players) >= 2, "Not enough players!"
 
-        if len(self.players) < 2:
-            print "Not enough players! Exit"
-            exit()
+        # find the player the starts the round
         if starting_player_id is None:  # if no new value given
             if self.starting_player_id is None:  # if no default value already exists
                 for p in self.players:

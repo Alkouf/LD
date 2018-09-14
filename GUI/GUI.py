@@ -9,6 +9,8 @@ import random
 
 
 class App:
+    """ Handles the GUI and the game """
+
     def __init__(self):
         self.nof_players = 3
         self.player_type = "mixed"

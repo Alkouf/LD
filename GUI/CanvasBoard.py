@@ -6,17 +6,25 @@ import numpy as np
 import time
 
 
-# TODO: find out why the leftmost column is truncated, the cells are thinner than they should
 # TODO: player bid by clicking the board ?? (needs to give the symbol as well)
-# TODO: font size isn't very flexible, does not change significantly depending on board size
-# TODO: limit max board size (width), possibly according to screen size
-# TODO: associate the text within the rectangles with the event, because otherwise if the text is clicked, the event does not take place
+"""TODO: associate the text within the rectangles with the event, 
+because otherwise if the text is clicked, the event does not take place"""
 # TODO: related to above, (maybe) bind the same event to every rectangle+text (it should receive the id from the event)
-# TODO: fix the borders; some of the borders are missing, probably because is too tight
 
 
 class CanvasBoard:
+    """" implements the board GUI """
     def __init__(self, root, width, height=None, pack_side=None):
+        """
+        Setup the board within the root
+
+        Creates the cells on the circumference of the board and the message panel in the interior
+
+        :param root:
+        :param width:
+        :param height:
+        :param pack_side:
+        """
         self.bid_die_rect = None
         self.bid_die_text = None
 
@@ -284,6 +292,8 @@ class InnerBoard:
 
 
 if __name__ == "__main__":
+    # For testing
+
     root = Tk()
     # w = 1000
     w = 600

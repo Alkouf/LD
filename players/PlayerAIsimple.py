@@ -1,8 +1,6 @@
 from players import Player
 
 
-# TODO: make PlayerAI class, and PlayerAIsimple should be subclass (is instance tho? think yes)
-# TODO: add the option for the player to do something random
 class PlayerAIsimple(Player):
     def __init__(self, nof_dice, player_id):
         Player.__init__(self, nof_dice=nof_dice, player_id=player_id)
@@ -51,9 +49,9 @@ class PlayerAIsimple(Player):
 
     def calcProbabilityE(self, target_dice, out_of_dice, symbol):
         """
-        Return the probability that exactly "targetDice" exist
-        within the total number of dice ("outofDice").
-        Parameter "symbol", refers to the desired number (or if is sta!)
+        Return the probability that exactly "target_dice" exist
+        within the total number of dice ("out_of_dice").
+        Parameter "symbol", refers to the desired number (or if it is star)
 
         :param target_dice:
         :param out_of_dice:
