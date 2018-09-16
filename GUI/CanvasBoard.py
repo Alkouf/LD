@@ -30,10 +30,8 @@ class CanvasBoard:
 
         self.root = root
         self.width = width
-        print height
         if height is None:
             height = 0.7 * self.width
-        print height
         self.height = height
         self.canvas = Canvas(self.root, bg='grey', borderwidth=5, width=self.width, height=self.height)
         self.canvas.pack(side=pack_side)
@@ -42,10 +40,7 @@ class CanvasBoard:
 
         self.c_font = tkFont.Font(size=str(int(-0.5 * self.cell_dims)), weight=tkFont.NORMAL)
 
-        self.cells = [[] for i in range(30)]  # triplet: rectangle id, x, y (coords of top left of the rectangle)
-        # self.canvas.create_rectangle(0, 0,self.cell_dims,self.cell_dims, fill="blue")
-        # self.canvas.create_rectangle(40, 0,self.cell_dims+40,self.cell_dims, fill="blue")
-        # self.canvas.create_rectangle(50,100,40,40, fill="green")
+        self.cells = [[] for i in range(30)]
 
         for i in range(30):
             if i < 10:
@@ -159,11 +154,11 @@ class CanvasBoard:
         return index - 1
 
     def event_cell(self, event, cell_number):
+        """For future use"""
         print "hey this is an eventful event"
         print "cell No", cell_number
         print event.x, event.y
         print event.x_root, event.y_root
-        # print event.widget  # this refers to the canvas (I think)
 
     def lambda_gen(self, cc):
         return lambda event: {

@@ -4,11 +4,7 @@ import time
 import threading
 from Tkinter import TclError
 
-
-"""TODO: na ftiaksw to GameCLI na douleuei
-kai na afisw auto na einai apokleistika kai mono gia GUI 
-an den mporei na doulepsei to GUI tote na paei sto CLI automata
-"""
+# TODO: if GUI not applicable then proceed with the CLI version
 
 
 class Game:
@@ -73,7 +69,7 @@ class Game:
                 self.pui[p.id].set_bid_button_command(command=self.continue_cycle)
                 self.pui[p.id].set_bid_button_state(state="DISABLED")
 
-                self.pauses = True
+                self.pauses = True  # is set to true because there is a human player
                 print "\'pauses\' is set to True, as there is a human player"
 
             elif not all_visible:
@@ -129,7 +125,7 @@ class Game:
         if not self.pauses:
             self.init_cycle()
             self.play_cycle()
-            print "Starting player:", self.starting_player_id
+            # print "Starting player:", self.starting_player_id
             while len([x for x in self.players if x.nDice > 0]) > 1:
                 self.init_cycle()
                 self.play_cycle()
@@ -139,14 +135,11 @@ class Game:
                 self.play_cycle()
 
         if len([x for x in self.players if x.nDice > 0]) == 1:
-            print "GAME OVER!"
-            print "Player", self.starting_player_id, " is the winner!"
+            # One player left, game is over!
             self.board.set_message("Player " + str(self.starting_player_id) + " has won!")
             for p in self.players:
-                print "is", p.id, "instance? ", isinstance(p, PlayerHuman)
-                print p.id == self.starting_player_id
-                print p.id == self.starting_player_id and isinstance(p, PlayerHuman)
                 if p.id == self.starting_player_id and isinstance(p, PlayerHuman):
+                    # if a human player exists then export the stats
                     self.export_stats()
 
         self.board.blink(0)
@@ -167,7 +160,7 @@ class Game:
 
         new_bid = self.pui[self.starting_player_id].get_spinbox_bid()
 
-        # check if valid -> if not-> return (kai praktika perimene na ksanadwthei bid) + message
+        # check if valid -> if not-> return (in order to be given a new and valid bid) + message
         print self.cycle_moves[-1], (self.starting_player_id, new_bid)
         if eval.Evaluate.validBid(self.cycle_moves[-1], (self.starting_player_id, new_bid)):
             bid = (self.starting_player_id, new_bid)
@@ -177,7 +170,7 @@ class Game:
             self.board.place_bid(bid=new_bid)
             self.pui[self.starting_player_id].set_bid_button_state(state="DISABLED")
         else:
-            print "Invalid new bid, the player plays again!"
+            self.board.set_message("Invalid bid, please enter a valid bid!")
             return
             # if isinstance(active_players[self.starting_player_id % nof_active], PlayerAIsimple.PlayerAIsimple):
             #     print "Player is AI, no point in playing again, will provide the same bid probably"
@@ -189,15 +182,11 @@ class Game:
         for i in range(len(self.players)):
             if self.players[i].id == self.starting_player_id:
                 index = i
-        print "Starting id is", self.starting_player_id
         index += 1
         self.starting_player_id = self.players[index % len(self.players)].id
-        print "following id is", self.starting_player_id
         while self.players[index].nDice <= 0:
             self.starting_player_id = self.players[(index + 1) % len(self.players)].id
-            print "IN da loop", self.starting_player_id
             index += 1
-        print "strarts next", self.starting_player_id
 
         self.play_cycle()
 
@@ -242,7 +231,6 @@ class Game:
                 playing_index = i
                 break
 
-        print "STARTING P ID, INDEX", self.starting_player_id, playing_index
         total_dice = sum([x.nDice for x in self.players])
 
         actions = []
@@ -258,7 +246,6 @@ class Game:
             To neo bid paei sto telos.
             An to bid einai -1, tote vgainei apo to loop.
             """
-            print "state"
             # self.board.set_message("Player " + str(active_players[playing_index % nof_active].id) + " plays")
             actions.append((self.board.set_message,
                             ["Player " + str(active_players[playing_index % nof_active].id) + " plays"], self.delay))
@@ -288,22 +275,17 @@ class Game:
                 # self.board.place_bid(bid=new_bid)
                 actions.append((self.board.place_bid, [new_bid], None))
             else:
-                print "Invalid new bid, the player plays again!"
-                # todo: warn player on UI, on canvas message (without immediately being replaced by "Player 1 plays")
+                self.board.set_message("Invalid bid, please enter a valid bid!")
                 if isinstance(active_players[playing_index % nof_active], PlayerAIsimple):
                     print "Player is AI, no point in playing again, will provide the same bid probably"
                     exit()
 
-        # self.reveal()
         actions.append((self.reveal, [], None))
-        # self.eval_carry_out(eval.Evaluate.challenge(active_players, self.cycle_moves), active_players, playing_index)
         actions.append((self.eval_carry_out,
                         [eval.Evaluate.challenge(active_players, self.cycle_moves), active_players, playing_index],
                         None))
-        # self.delayed_actions(actions)
         t = threading.Thread(target=self.delayed_actions, args=(actions,))
         t.start()
-        print "END of the round"
         self.moves += self.cycle_moves
         self.board.blink(0)
 
@@ -343,7 +325,6 @@ class Game:
         """
         for p in self.players:
             self.pui[p.id].set_dice(visible=True)
-            print p.id, " player ", p.dice
 
     def update_total_dice(self):
         """
@@ -369,38 +350,30 @@ class Game:
         :return:
         """
         nof_active = len(active_players)
-        print "CHALLENGE!"
-        print "Player id=", active_players[(playing_index - 1) % nof_active].id, " challenged!"
 
         msg = "Player " + str(active_players[(playing_index - 1) % nof_active].id) + " challenged, "
-        print "And there the difference on the dice is: ", ev
         if ev < 0:
-            print "player", active_players[(playing_index - 2) % nof_active].id, "loses", abs(ev), "dice"
             msg += "and player " + str(active_players[(playing_index - 2) % nof_active].id) + " loses " + str(
                 abs(ev)) + " dice"
             active_players[(playing_index - 2) % nof_active].subtractDice(abs(ev))
             starting_player_id = active_players[(playing_index - 1) % nof_active].id
         elif ev == 0:
-            print "all players but player", active_players[(playing_index - 2) % nof_active].id, "lose one die"
             msg += "and all players but " + str(active_players[(playing_index - 2) % nof_active].id) + " lose one die"
             for p in active_players:
                 if p != active_players[(playing_index - 2) % nof_active]:
                     p.subtractDice(1)
             starting_player_id = active_players[(playing_index - 2) % nof_active].id
         else:
-            print "player", active_players[(playing_index - 1) % nof_active].id, "loses", ev, "dice"
             msg += "and player" + str(active_players[(playing_index - 1) % nof_active].id) + " loses " + str(
                 ev) + " dice"
             active_players[(playing_index - 1) % nof_active].subtractDice(abs(ev))
             starting_player_id = active_players[(playing_index - 2) % nof_active].id
 
-        print "Situation after removing dice:"
         for p in self.players:
-            print "Player", p.id, " has ", p.nDice, "dice left"
             self.pui[p.id].lost_dice(p.nDice)
             if isinstance(p, PlayerHuman):
-                print "stats recorded??", self.recorded_stats
                 if p.nDice == 0 and not self.recorded_stats:
+                    # export the stats right after the player loses, because they are likely to initiate new game
                     self.export_stats()
                     self.recorded_stats = True
 
@@ -447,8 +420,8 @@ class Game:
                 t1 += 1
                 if p.nDice > 0:
                     t1_w += 1
-        print "wrinting to csv!"
         self.append_stats(nof_opponents=t1 + t2, w_L=w_L, count_t1=t1, count_t2=t2, lost_to_t1=t1_w, lost_to_t2=t2_w)
+        # write the stats to the .cvs file
 
     def append_stats(self, nof_opponents, w_L, count_t1, count_t2, lost_to_t1, lost_to_t2):
         # time, nof_opponents, w_L, count_t1, count_t2, lost_to_t1, lost_to_t2

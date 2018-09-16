@@ -6,6 +6,7 @@ from players import PlayerAIsimple, PlayerHuman, Player, PlayerAImk2
 
 """
 
+
 class Game:
     def __init__(self):
         # self.eval = Evaluate.Evaluate()
@@ -13,14 +14,16 @@ class Game:
         self.players = []
         self.totalDice = 0
 
-    def add_players(self, playerList):
+    def add_players(self, player_list):
         """
 
-        :param playerList: List of objects, of the class Player or subclass
+        :param player_list: List of objects, of the class Player or subclass
         :return:
         """
-        # TODO: check that the argument is indeed a list of Player (sub)class
-        self.players += playerList
+        assert set([isinstance(p, Player) for p in player_list]) == {True}, \
+            "Not all players are instances of Player"
+
+        self.players += player_list
         self.totalDice = sum([x.nDice for x in self.players])
 
     def remove_players(self, playerIDs):
@@ -44,6 +47,7 @@ class Game:
         :return:
         """
 
+        print "* * * * * * * * * * * * * * * * \n* NEW ROUND STARTS! *"
         if len(self.players) < 2:
             print "Not enough players! Exit"
             exit()
@@ -53,10 +57,10 @@ class Game:
         while len([x for x in self.players if x.nDice > 0]) > 1:
             starting_player_id = self.play_cycle(starting_player_id)
 
-        print "THE GAME IS OVER!"
+        print "* THE GAME IS OVER! *"
         for p in self.players:
             print p
-        print "Player", starting_player_id, " is the winner!"
+        print "* Player", starting_player_id, " is the winner! *"
         return starting_player_id
 
     def play_cycle(self, starting_player_id):
@@ -90,22 +94,23 @@ class Game:
             To neo bid paei sto telos.
             An to bid einai -1, tote vgainei apo to loop.
             """
-            print "state"
 
-            newBid = activePLayers[playingIndex % nofActive].play(total_dice=totalDice, round_moves=cycleMoves)
             activeID = activePLayers[playingIndex % nofActive].id
+            print "Player ", activeID, " plays"
+            newBid = activePLayers[playingIndex % nofActive].play(total_dice=totalDice, round_moves=cycleMoves)
             if eval.Evaluate.validBid(cycleMoves[-1], (activeID, newBid)):
                 bid = (activeID, newBid)
                 cycleMoves.append(bid)
                 playingIndex += 1
-                print "Player", activeID, " bidded: ", newBid
+                print "Player", activeID, " bade: ", newBid
             else:
                 print "Invalid new bid, the player plays again!"
                 if not isinstance(activePLayers[playingIndex % nofActive], PlayerHuman):
                     print "Player is AI, no point in playing again, will provide the same bid probably"
                     exit()
+            print "- - - - - - - - - - - - - "
 
-        print "CHALLENGE!"
+        print "* CHALLENGE! *"
         self.reveal()
 
         ev = eval.Evaluate.challenge(activePLayers, cycleMoves)
@@ -134,7 +139,8 @@ class Game:
                 p.dice = []
             print "Player", p.id, " has ", p.nDice, "dice left"
 
-        print "END of the round"
+        print "* The round ended! *"
+        print "* * * * * * * * * * * * * * * *"
         self.moves += cycleMoves
 
         return starting_player_id
@@ -152,14 +158,8 @@ class Game:
 
 if __name__ == '__main__':
     g = Game()
-    # from players import PlayerAImk2
 
-    g.add_players(playerList=[PlayerHuman(nof_dice=5, player_id=1),
-                              PlayerAImk2(nof_dice=5, player_id=2)
-                              ])
+    g.add_players(player_list=[PlayerHuman(nof_dice=5, player_id=1),
+                               PlayerAImk2(nof_dice=5, player_id=2)
+                               ])
     g.playGame()
-    # print g.add_players(player_list=[Player(nof_dice=5, player_id=1),
-    #                                  PlayerHuman(nof_dice=5, player_id=2),
-    #                                  PlayerAIsimple(nof_dice=5, player_id=3),
-    #                                  PlayerAImk2(nof_dice=5, player_id=4)
-    #                                  ])

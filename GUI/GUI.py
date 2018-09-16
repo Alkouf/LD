@@ -15,6 +15,8 @@ class App:
         self.nof_players = 3
         self.player_type = "mixed"
         self.root = Tk()
+        self.root.title("Liar's Dice Board Game")
+        self.root.iconbitmap("..\media\\transparenticon.ico")
 
         self.g_menu = GMenu(root=self.root, start_game_command=self.start_game,
                             player_type_command=self.set_player_type)

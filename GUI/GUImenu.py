@@ -1,4 +1,5 @@
 from Tkinter import *
+import tkMessageBox
 
 
 class GMenu:
@@ -45,6 +46,8 @@ class GMenu:
 
         menubar.add_cascade(label="Opponent type", menu=player_type_menu)
 
+        menubar.add_command(label="Help", command=self._callback)
+
         # display the menu
         root.config(menu=menubar)
 
@@ -60,3 +63,16 @@ class GMenu:
         return lambda: {
             self.player_type_command(t=player_type)
         }
+
+    def _callback(self):
+        print "click!"
+        tkMessageBox.showinfo(
+            title="Guidelines to play the game",
+            message="You can select the number of the opponents and their type (type 2 is harder) via the menu.\n\n"
+                    "When is your turn select your bid using the spinner boxes by defining the symbol and the number. "
+                    "The symbol is the dice number (1-5 or star *). "
+                    "The minus one (-1) option on \"symbol\" corresponds "
+                    "to the act of challenging the previous player.\n\n"
+                    "For more information about the game rules refer to "
+                    "https://en.wikipedia.org/wiki/Liar%27s_dice#Common_hand"
+        )

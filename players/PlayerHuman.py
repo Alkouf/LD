@@ -1,6 +1,15 @@
 from players import Player
 
 
+def is_num(user_input):
+    try:
+        int(user_input)
+    except ValueError:
+        return False
+    else:
+        return True
+
+
 class PlayerHuman(Player):
 
     def play(self, total_dice, round_moves):
@@ -18,5 +27,7 @@ class PlayerHuman(Player):
             print "You start the new round!"
         print "Your dice: ", self.dice
         player_bid = raw_input("Give the bid bud! ")
+        while not is_num(player_bid):
+            player_bid = raw_input("The bid must be integer. Give the bid bud!")
         player_bid = int(player_bid)
         return player_bid
