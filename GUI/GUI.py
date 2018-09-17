@@ -49,7 +49,7 @@ class App:
         :param player_type: the type of the opponent players; "simpleAI", "AImk2", "mixed" (50% chance each)
         :return:
         """
-        print number_players
+        # print number_players
         if number_players is not None:
             self.nof_players = number_players
 
@@ -67,7 +67,7 @@ class App:
         elif self.player_type == "mixed":
             e = .5
         for i in range(2, self.nof_players + 1, 1):
-            print "AI", i, "chance AI simple:", e
+            # print "AI", i, "chance AI simple:", e
             if random.random() < e:
                 players.append(PlayerAIsimple(5, i))
             else:

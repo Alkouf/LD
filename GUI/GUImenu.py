@@ -1,5 +1,6 @@
 from Tkinter import *
 import tkMessageBox
+import Statistics
 
 
 class GMenu:
@@ -47,12 +48,14 @@ class GMenu:
 
         menubar.add_cascade(label="Opponent type", menu=player_type_menu)
 
+        menubar.add_command(label="Statistics", command=Statistics.show_stats)
+
         menubar.add_command(label="Help", command=self._callback)
 
         # display the menu
         root.config(menu=menubar)
 
-        print self.select.get(), self.type_select.get()
+        # print self.select.get(), self.type_select.get()
 
     def gen_command(self, nof_players):
         return lambda: {
@@ -60,7 +63,7 @@ class GMenu:
         }
 
     def gen_command_type(self, player_type):
-        print("type of opponents:", player_type)
+        # print("type of opponents:", player_type)
         return lambda: {
             self.player_type_command(t=player_type)
         }

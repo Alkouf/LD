@@ -116,7 +116,7 @@ class PlayerGUI:
                 state = NORMAL
             elif state == "DISABLED":
                 state = DISABLED
-        print "state:", state
+        # print "state:", state
         self._bid_button.config(state=state)
 
     def set_bid_button_command(self, command):

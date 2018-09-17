@@ -141,10 +141,11 @@ class CanvasBoard:
 
     def _event_cell(self, event, cell_number):
         """For future use"""
-        print "hey this is an eventful event"
-        print "cell No", cell_number
-        print event.x, event.y
-        print event.x_root, event.y_root
+        # print "hey this is an eventful event"
+        # print "cell No", cell_number
+        # print event.x, event.y
+        # print event.x_root, event.y_root
+        pass
 
     def lambda_gen(self, cc):
         return lambda event: {

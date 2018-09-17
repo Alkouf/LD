@@ -138,12 +138,12 @@ class Game:
         :return: None
         """
         # take the bid from the form
-        print self.starting_player_id
+        # print self.starting_player_id
 
         new_bid = self.pui[self.starting_player_id].get_spinbox_bid()
 
         # check if valid -> if not-> return (in order to be given a new and valid bid) + message
-        print self.cycle_moves[-1], (self.starting_player_id, new_bid)
+        # print self.cycle_moves[-1], (self.starting_player_id, new_bid)
         if eval.Evaluate.validBid(self.cycle_moves[-1], (self.starting_player_id, new_bid)):
             bid = (self.starting_player_id, new_bid)
             # append human players' bid
@@ -238,7 +238,7 @@ class Game:
             new_bid = active_players[playing_index % nof_active].play(total_dice=total_dice,
                                                                       round_moves=self.cycle_moves)
             active_id = active_players[playing_index % nof_active].id
-            print new_bid
+            # print new_bid
 
             if eval.Evaluate.validBid(self.cycle_moves[-1], (active_id, new_bid)):
                 bid = (active_id, new_bid)
