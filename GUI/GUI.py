@@ -9,7 +9,7 @@ import random
 
 
 class App:
-    """ Handles the GUI and the game """
+    """ Handles the GUI and initiates the game procedure """
 
     def __init__(self):
         self.nof_players = 3
@@ -43,7 +43,7 @@ class App:
         0. destroy the players (if anyone exists)
         1. create the list with the players objects (PlayerHuman, PlayerAI ...)
         2. create the dictionary with the players and lay them onto the left/right frames
-        4.
+        4. starts game (via Game class)
 
         :param number_players:
         :param player_type: the type of the opponent players; "simpleAI", "AImk2", "mixed" (50% chance each)
@@ -52,7 +52,6 @@ class App:
         print number_players
         if number_players is not None:
             self.nof_players = number_players
-            print "RESERDED SDDs ", self.nof_players
 
         self.destroy_pui()
 
@@ -79,22 +78,18 @@ class App:
             if i == 0 or i > self.nof_players / 2:
                 if i == self.nof_players - 2 and self.nof_players > 4:
                     # make sure the players are laid out clockwise
-                    print (i + 1), "left"
                     self.p[players[i + 1].id] = PlayerGUI.PlayerGUI(self.frameLeft, width=300, pack_side=TOP,
                                                                     player=players[i + 1])
-                    print i, "left"
                     self.p[players[i].id] = PlayerGUI.PlayerGUI(self.frameLeft, width=300, pack_side=TOP,
                                                                 player=players[i])
                     break
 
-                print i, "left"
                 self.p[players[i].id] = PlayerGUI.PlayerGUI(self.frameLeft, width=300, pack_side=TOP, player=players[i])
             else:
-                print i, "right"
                 self.p[players[i].id] = PlayerGUI.PlayerGUI(self.frameRight, width=300, pack_side=TOP,
                                                             player=players[i])
 
-        game = Game(board=self.cb, pui=self.p, pauses=1)
+        game = Game(board=self.cb, pui=self.p)
         game.add_players(players, all_visible=False)
         game.play_game()
         self.game = game

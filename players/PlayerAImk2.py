@@ -5,37 +5,57 @@ from probabilities import calcProbabilityGE
 
 
 class PlayerAImk2(Player):
+    """
+    An improved and versatile version of AI player
 
+    The agent (AI player) has a memory option where it holds the previous bids by the opponents.
+    The memory is used as indication of what dice might the opponents have.
+    E.g. if human plays 2 of star(*) then the AI will think that the human has at least one star
+    and will incorporate it to the decision making process.
+
+    The agent has three options for decision making (for selecting the next bid):
+    1. Random: from the available bids selects randomly
+    2. Greedy: selects the bid that minimizes the probability to lose.
+        Isn't very effective against humans because gives out a lot of information.
+    3. Softmax: from the probabilities to not lose for every possible bid option,
+        calculates a vector of softmax weights. Using the weights selects one of the possible bids.
+        That way the AI acts more randomly, and confusing for the human.
+        At the same time does not disregard the probabilities but uses them as adapted weights.
+    4. Combination of the above: given a number e (\in (0,1)) selects between two of the above options.
+
+    Default option combines greedy with softmax (60% of the time greedy, 40% softmax)
+    """
     def __init__(self, nof_dice, player_id, memory=True):
         Player.__init__(self, nof_dice=nof_dice, player_id=player_id)
-        # super(Player.Player, self).__init__() ??
         self.m = memory
 
     def play(self, total_dice, round_moves):
+        """
+        The AI selects one of the possible moves (bids).
 
-        print "round moves:", round_moves
+        For the decision incorporates the memory option.
+
+        :param total_dice: int, the total number of dice in the game
+        :param round_moves: list of tuples, the moves that have been played during the round
+        :return: int, the bid
+        """
 
         temp_total = total_dice
         temp_dice = self.dice
 
         if self.m:
             m = self.memory(round_moves)
-            print "MEMORY:", m
-            print "total original", total_dice
             # temp_total = total_dice - len(m)
             temp_dice = self.dice + m
-            print "temp total and dice", temp_total, temp_dice
 
         p = []
-
-        newBid = -1  # default is to challenge
 
         number_bid = round_moves[-1][1] / 10
         symbol_bid = round_moves[-1][1] % 10
 
-        # 1. Calculate the probability the chance to be true
+        # Calculate the probability the chance to be true
         pn_dice = len([x for x in temp_dice if x == 0 or x == symbol_bid])
-        # print "pn_dice", pn_dice
+
         prob = calcProbabilityGE(target_dice=number_bid - pn_dice, out_of_dice=temp_total - len(temp_dice),
                                  symbol=symbol_bid)
         prob = 1 - prob
@@ -72,6 +92,7 @@ class PlayerAImk2(Player):
 
     def choice_combo(self, choice1, choice2, p, e=.5):
         """
+        Combines two of the above selection policies
 
         :param choice1: first choice function. One of {choice_softmax, choice_greedy, choice_random}
         :param choice2: second choice function. One of {choice_softmax, choice_greedy, choice_random}
@@ -89,6 +110,12 @@ class PlayerAImk2(Player):
         return choice2(p)
 
     def softmax(self, p):
+        """
+        Produces the softmax weights from the probabilities p
+
+        :param p: list of float, the probabilities for the bids
+        :return: list of float, the softmax weights for the bids
+        """
         emphasis = 5
         z_exp = [math.exp(i * emphasis) for i in [a[1] for a in p]]
         # print z_exp
@@ -100,6 +127,12 @@ class PlayerAImk2(Player):
         return softmax
 
     def memory(self, round_moves):
+        """
+        Exports the memory list, that is the probable dice of the opponents.
+
+        :param round_moves:
+        :return: list of int, assumes the AI knows one dice of each player
+        """
         m = dict()
         for b in round_moves:
             if b[1] != 0:
@@ -116,6 +149,12 @@ class PlayerAImk2(Player):
         return a
 
     def sample(self, seq):
+        """
+        Randomly select from sequence according to weights of the sequence.
+
+        :param seq:
+        :return:
+        """
         v = self.random.random()
         i = 0
         sum = 0

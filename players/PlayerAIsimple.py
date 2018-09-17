@@ -3,6 +3,10 @@ from probabilities import calcProbabilityGE
 
 
 class PlayerAIsimple(Player):
+    """
+    A simple AI agent that selects the bid based on a greedy tactic.
+    Selects the bid that is the least possible to lose.
+    """
     def __init__(self, nof_dice, player_id):
         Player.__init__(self, nof_dice=nof_dice, player_id=player_id)
         # super(Player.Player, self).__init__() ??

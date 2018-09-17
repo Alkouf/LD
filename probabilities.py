@@ -1,5 +1,20 @@
+"""
+This file provides functions to calculate probabilities refering on how many dice might exist out of a sum of dice.
+
+Moreover when run as _main_ employs a window with an interface to calculate those probabilities.
+
+"""
+
 def calcProbabilityGE(target_dice, out_of_dice, symbol):
-    # print "target", target_dice, " outof", outofDice, " symb ", symbol
+    """
+    Probability that there are at least target_dice form whole the dice (out_of_dice)
+    given the symbol.
+
+    :param target_dice: int
+    :param out_of_dice: int
+    :param symbol: int, \in {1,2,3,4,5,0}
+    :return: float, probability that there are at least that number of dice
+    """
     prob = 0
     if target_dice <= 0:
         return 1
@@ -20,7 +35,6 @@ def calcProbabilityE(target_dice, out_of_dice, symbol):
     :param symbol:
     :return:
     """
-    # TODO: it's not the best way to do the calculations (factorial does not scale well)
 
     if target_dice > out_of_dice:
         return 0

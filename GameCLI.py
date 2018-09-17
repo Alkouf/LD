@@ -2,8 +2,9 @@ import Evaluate as eval
 from players import PlayerAIsimple, PlayerHuman, Player, PlayerAImk2
 
 """
+Play the game via the terminal.
 
-
+No stats.  
 """
 
 
@@ -43,6 +44,7 @@ class Game:
 
     def playGame(self, starting_player_id=None):
         """
+        The game sequence
 
         :return:
         """

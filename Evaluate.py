@@ -10,7 +10,7 @@ class Evaluate:
 
         :param previousBid:
         :param newBid:
-        :return:
+        :return: boolean
         """
 
         if newBid[1] == -1:
@@ -65,10 +65,8 @@ class Evaluate:
         lastSymbol = lastBid % 10
         lastNumber = lastBid / 10
 
-        # TODO: this prerequisites that the players that lost have no dice!!
         dice = [x.dice for x in players]
         dice = [item for sublist in dice for item in sublist]
-        # ^ hope this works
 
         countDict = Counter(dice)
 

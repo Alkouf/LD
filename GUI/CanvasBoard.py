@@ -2,15 +2,6 @@ from Tkinter import *
 import tkFont
 import tkMessageBox
 
-import numpy as np
-import time
-
-
-# TODO: player bid by clicking the board ?? (needs to give the symbol as well)
-"""TODO: associate the text within the rectangles with the event, 
-because otherwise if the text is clicked, the event does not take place"""
-# TODO: related to above, (maybe) bind the same event to every rectangle+text (it should receive the id from the event)
-
 
 class CanvasBoard:
     """" implements the board GUI """
@@ -99,10 +90,6 @@ class CanvasBoard:
         """
         color = "lime green"
 
-        # Delete them if they exist in order to update them
-
-        print "HEEEEEE", bid
-
         if bid is None:
             bid = 0
 
@@ -118,9 +105,8 @@ class CanvasBoard:
             return
 
         symbol = str(bid % 10)
-        print bid, symbol
         if symbol == "0": symbol = "*"
-        index = self.bid_to_location(bid)
+        index = self._bid_to_location(bid)
 
         c = self.cells[index]
 
@@ -138,7 +124,7 @@ class CanvasBoard:
 
         self.grey_out_cells(index=index)
 
-    def bid_to_location(self, bid):
+    def _bid_to_location(self, bid):
         """
         Given the bid, finds the index or the position of the bid (aka the cell index).
 
@@ -153,7 +139,7 @@ class CanvasBoard:
             index = number + number / 2
         return index - 1
 
-    def event_cell(self, event, cell_number):
+    def _event_cell(self, event, cell_number):
         """For future use"""
         print "hey this is an eventful event"
         print "cell No", cell_number
@@ -162,7 +148,7 @@ class CanvasBoard:
 
     def lambda_gen(self, cc):
         return lambda event: {
-            self.event_cell(event, cc)
+            self._event_cell(event, cc)
         }
 
     def grey_out_cells(self, index=None, bid=None):
@@ -181,8 +167,7 @@ class CanvasBoard:
             if bid is None:
                 index = -1
             else:
-                index = self.bid_to_location(bid)
-        print "index=", index
+                index = self._bid_to_location(bid)
         for i in range(30):
             self.canvas.itemconfig(self.cells[i][0], fill="yellow")
         i = 1
@@ -199,27 +184,50 @@ class CanvasBoard:
                 self.canvas.itemconfig(c[0], fill="#555")
 
     def set_dice_in_game(self, nofdice):
+        """
+        Updates the message in the interior of the board regarding the dice number
+
+        :param nofdice: int, the number of dice in game
+        :return: None
+        """
         self.innie.set_dice_in_game(nofdice)
         self.root.update()
 
     def set_players_active(self, nofactive):
+        """
+        Updates the relevant message at the itnerior of the board about the number of players still playing
+
+        :param nofactive: int, the number of active players, players that still have dice
+        :return: None
+        """
         self.innie.set_players_active(nofactive)
 
     def set_message(self, message):
+        """
+        Updates the message at the interior of the board with the given message
+
+        :param message: str, the message to write
+        :return: None
+        """
         self.innie.set_message(message)
 
     def blink(self, ms=500):
         """
-        kathusterei to gui alla oxi tin ektelesi apo pisw
-        :param ms:
-        :return:
+        Updates the queued actions referring to the board and waits some ms.
+        (Deprecated?)
+
+        :param ms: int, millliseconds to wait
+        :return: None
         """
         self.root.update_idletasks()
         self.root.after(ms)
-        # time.sleep(ms / 1000)
-        # self.root.after(ms, lambda: self.canvas.config(bg='yellow'))
 
     def update_gui(self):
+        """
+        Updates the pending GUI actions
+
+        :return: None
+        """
         self.root.update_idletasks()
 
     def set_inner_button_text(self, text):
@@ -229,10 +237,16 @@ class CanvasBoard:
         self.innie.set_button_command(command=command)
 
     def set_inner_button_state(self, state=NORMAL):
+        """ state= (str) NORMAL / DISABLED """
         self.innie.set_button_state(state=state)
 
 
 class InnerBoard:
+    """
+    Class that implements the interior of the board.
+    It contains some messages (player count, dice count, info)
+    and the button that initiates the new round.
+    """
     def __init__(self, parent_canvas, font=None):
         self.font = tkFont.Font(size=12, weight=tkFont.NORMAL)  # default only value
 
@@ -268,7 +282,6 @@ class InnerBoard:
         self.inner_board.itemconfig(self.players_active, text="Players that still play: " + str(nofactive))
 
     def set_message(self, message):
-        print "what is wrong??", message
         self.inner_board.itemconfig(self.message, text=message)
 
     def set_button_command(self, command):
@@ -307,7 +320,7 @@ if __name__ == "__main__":
 
     # cb.place_bid(0)
 
-    # print cb.bid_to_location(10)
+    # print cb._bid_to_location(10)
 
     # cb.grey_out_cells(1)
 

@@ -3,6 +3,7 @@ import tkMessageBox
 
 
 class GMenu:
+    """ The menu on the game window """
     def __init__(self, root, start_game_command, player_type_command):
         self.default_enemies = 3
         self.start_command = start_game_command

@@ -131,20 +131,6 @@ class PlayerGUI:
         symbol = 0 if self._spinny_symbol.get() == "*" else int(self._spinny_symbol.get())
         return number * 10 + symbol if symbol != -1 else -1
 
-    # def set_number_spinbox_state(self, state):
-    #     """
-    #
-    #     :param state: one of {"NORMAL", "DISABLED", "readonly"}
-    #     :return:
-    #     """
-    #     if self._human_player:  # only _human_player has spinbox
-    #         if isinstance(state, str):
-    #             if state == "NORMAL":
-    #                 state = NORMAL
-    #             elif state == "DISABLED":
-    #                 state = DISABLED
-    #         self._spinny_number.config(state=state)
-
     def set_message(self, mess):
         """ if mess is str then update the player's message label  (otherwise do nothing)"""
 

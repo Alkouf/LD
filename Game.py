@@ -4,25 +4,22 @@ import time
 import threading
 from Tkinter import TclError
 
-# TODO: if GUI not applicable then proceed with the CLI version
-
 
 class Game:
-    def __init__(self, board=None, pui=None, starting_player_id=None, pauses=True):
+    """ Handles the game procedure only when there is GUI """
+    def __init__(self, board=None, pui=None, starting_player_id=None):
         """
         Initialize, if either board or pui is None, then the gui is deactivated.
-        PlayerHuman must be played with the gui!!
 
-        :param board: CanvasBoard object that corresponds to the board (default None).
-                If None then no gui is used at all.
-        :param pui: list of PlayerGUI objects that correspond to the players (default None). If None then no gui at all.
+        :param board: CanvasBoard object that corresponds to the board (required).
+        :param pui: list of PlayerGUI objects that correspond to the players (required).
         :param starting_player_id: integer (default None), the id of the player that starts the game.
                 If None starts the first player on the list.
-        :param pauses: boolean (default True), when gui is applicable, if true the gameplay will pause
-                when one round finishes,until the "continue" button is pressed.
-                If false no pauses until the start of the new round.
-                When there is one or more human players (PlayerHuman) the value must be "True".
         """
+
+        assert board is not None, "No board given"
+        assert pui is not None, "No player GUI given"
+
         self.moves = []  # list of lists of tuples (p_id, bid)
         self.players = []
         self.totalDice = 0
@@ -34,7 +31,6 @@ class Game:
             self.board.set_inner_button_command(self.play_game)
 
         self.cycle_moves = []
-        self.pauses = pauses  # False does not work when there is human player
         self.delay = 1000  # the delay after some actions in milliseconds
         self.recorded_stats = False
         self.wait_thread = None
@@ -69,9 +65,6 @@ class Game:
                 self.pui[p.id].set_bid_button_command(command=self.continue_cycle)
                 self.pui[p.id].set_bid_button_state(state="DISABLED")
 
-                self.pauses = True  # is set to true because there is a human player
-                print "\'pauses\' is set to True, as there is a human player"
-
             elif not all_visible:
                 self.pui[p.id].dice_visible = False
 
@@ -95,16 +88,11 @@ class Game:
 
     def play_game(self, starting_player_id=None):
         """
-        If self.pauses: plays one game round (until somebody challenges), and then waits
-        for the button (inner canvas) to call this method again for a new game round
-        (meaning the human player initiates the new round)
-
-        If not self.pauses: plays game rounds, until only one player is left; the winner
-            Note: if self.pauses==False: does not work with human player(s)
+        plays game rounds, until only one player is left; the winner
 
         :param starting_player_id: The id of the player that starts the round.
                 Is set only on the first game round, it is managed internally for the following rounds.
-        :return:
+        :return: None
         """
         self.board.set_inner_button_state("DISABLED")
 
@@ -122,17 +110,9 @@ class Game:
         else:
             self.starting_player_id = starting_player_id
 
-        if not self.pauses:
+        if len([x for x in self.players if x.nDice > 0]) > 1:
             self.init_cycle()
             self.play_cycle()
-            # print "Starting player:", self.starting_player_id
-            while len([x for x in self.players if x.nDice > 0]) > 1:
-                self.init_cycle()
-                self.play_cycle()
-        else:
-            if len([x for x in self.players if x.nDice > 0]) > 1:
-                self.init_cycle()
-                self.play_cycle()
 
         if len([x for x in self.players if x.nDice > 0]) == 1:
             # One player left, game is over!
@@ -147,7 +127,9 @@ class Game:
     def continue_cycle(self):
         """
         This method is called only when a human plays, and presses the "bid" button.
-        In essence it continues the normal steps that had been interrupted when the human player's turn come up.
+        In essence it continues the normal steps that had been interrupted when the human player's turn come up
+        (after the human submitted their bid).
+
         In detail:
             checks if bid is valid; if not return
             else if it is valid: find the player that starts after the human player,
@@ -172,12 +154,8 @@ class Game:
         else:
             self.board.set_message("Invalid bid, please enter a valid bid!")
             return
-            # if isinstance(active_players[self.starting_player_id % nof_active], PlayerAIsimple.PlayerAIsimple):
-            #     print "Player is AI, no point in playing again, will provide the same bid probably"
-            #     exit()
 
-        # increment the playing id (thelei ligi skepsi)
-
+        # increment the playing id
         index = 0
         for i in range(len(self.players)):
             if self.players[i].id == self.starting_player_id:
@@ -241,11 +219,7 @@ class Game:
         actions.append((self.board.set_players_active, [len(active_players)], None))
 
         while self.cycle_moves[-1][1] != -1:
-            """
-            Paizei o paiktis pou einai i seira tou.
-            To neo bid paei sto telos.
-            An to bid einai -1, tote vgainei apo to loop.
-            """
+
             # self.board.set_message("Player " + str(active_players[playing_index % nof_active].id) + " plays")
             actions.append((self.board.set_message,
                             ["Player " + str(active_players[playing_index % nof_active].id) + " plays"], self.delay))
@@ -290,22 +264,25 @@ class Game:
         self.board.blink(0)
 
     def delayed_actions(self, actions):
-        # do stuff until reveal
-        # do stuff until player bid
-        # if pauses = false is ok? NO, delay only if pauses == False
-        # with and without human ...
         """
-        actions[i] = (function, args, delay)
-        possible actions: (type_of_action, id, extra_args, delay)
+        Applies the ordered action with a delay (so that they aren't applied instantly)
+
+        The actions are applied in a different thread so that the window won't freeze.
+        Otherwise the menu wouldn't be clickable while the main thread waits (and more problems would arise).
+
+        The list of possible actions:
         1. (set_bid_active, id, None, ms)
         2. (set_player_message, id, message, ms)
         3. (set_board_bid, None, bid, ms)
         4. (set_board_message, None, message, ms)
         5. (reveal_all, None, None, ms)
         6. (eval_carry_out, None, None, ms)
+
+        :param actions: list of tuples of the form (function, id, args, delay),
+                id of the object that the action refers to, delay in ms
+        :return: None
         """
         for a in actions:
-            print a[0], a[1]
             try:
                 a[0](*a[1])
             except TclError:
@@ -382,8 +359,7 @@ class Game:
             #     self.pui[p.id].set_active(False)
             # self.pui[p.id].set_dice(dice=p.dice)
 
-        if self.pauses:
-            self.board.set_inner_button_state("NORMAL")
+        self.board.set_inner_button_state("NORMAL")
         self.board.set_message(msg)
         self.board.set_players_active(len([x for x in self.players if x.nDice > 0]))
         self.starting_player_id = starting_player_id
@@ -394,8 +370,8 @@ class Game:
         Finds the player with the given id, and returns the player object.
         If not found, returns None
 
-        :param player_id:
-        :return:
+        :param player_id: int, the id of the player to look for
+        :return: None
         """
         for p in self.players:
             if p.id == player_id:
@@ -403,6 +379,11 @@ class Game:
         return None
 
     def export_stats(self):
+        """
+        Gathers the stats to be written to the file (according to the method append_stats)
+
+        :return: None
+        """
         t1_w = 0
         t2_w = 0
         t1 = 0
@@ -424,6 +405,23 @@ class Game:
         # write the stats to the .cvs file
 
     def append_stats(self, nof_opponents, w_L, count_t1, count_t2, lost_to_t1, lost_to_t2):
+        """
+        Appends the game statistics to the csv file (stats.csv).
+
+        The method is called when the human player wins or loses a game.
+        The columns (fields) that are written to the csv are all the parameters that follow
+        plus the timestamp (as the first column).
+
+        :param nof_opponents: int, the number of opponents
+        :param w_L: str, "win" or "loss"
+        :param count_t1: int, how many of the opponents are of type 1
+        :param count_t2: int, how many of the opponents are of type 2
+        :param lost_to_t1: int, to how many opponents of type 1 the human has lost to
+            (e.g. if 2 opponents and the player outplays only one of them, then the human lost to 1)
+        :param lost_to_t2: int, to how many opponents of type 2 the human has lost to
+        :return: None
+        """
+
         # time, nof_opponents, w_L, count_t1, count_t2, lost_to_t1, lost_to_t2
         f_name = "stats.csv"
         with open(f_name, "a+") as f:

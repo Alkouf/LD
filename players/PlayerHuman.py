@@ -2,6 +2,12 @@ from players import Player
 
 
 def is_num(user_input):
+    """
+    Checks if user_input is int
+
+    :param user_input: str
+    :return: Boolean
+    """
     try:
         int(user_input)
     except ValueError:
