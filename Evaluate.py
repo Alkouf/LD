@@ -6,7 +6,10 @@ class Evaluate:
     def validBid(previousBid, newBid):
         """
         Checks if the new bid is valid, according to the rules.
+
         I.e. if the new bid is larger than the previous, or challenge.
+
+        Also the max number of the bid must be
 
         :param previousBid:
         :param newBid:
@@ -22,6 +25,12 @@ class Evaluate:
 
         newSymbol = newBid[1] % 10
         newNumber = newBid[1] / 10
+
+        if newNumber > 20:
+            return False
+
+        if newNumber > 10 and newSymbol==0:
+            return False
 
         if newSymbol == 0:
             # what about stars. Number -> star. Star->number

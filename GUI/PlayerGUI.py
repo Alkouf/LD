@@ -94,7 +94,7 @@ class PlayerGUI:
 
         self.message_canvas.create_text(self._side * 4.3 / 10, self._side / 3.7 / 2., text="Number:")
 
-        self._spinny_number = Spinbox(master=self.message_canvas, values=range(1, 31, 1), width=2)
+        self._spinny_number = Spinbox(master=self.message_canvas, values=range(1, 21, 1), width=2)
         self.message_canvas.create_window(self._side * 6 / 10, self._side / 3.7 / 2., window=self._spinny_number)
 
         self._bid_button = Button(master=self.message_canvas, text="Bid")
