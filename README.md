@@ -16,3 +16,4 @@ That way it is more diffiult to decode the AI's hand.
 Moreover, it uses information from previous bids, that is consider what the previous players played and infers what they might have. 
 
 
+Additionally, there is the option to calculate the probabilities standalone with its own graphical interface. Run file probabilities.py.
